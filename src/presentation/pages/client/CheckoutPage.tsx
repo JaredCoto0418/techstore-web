@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import { useOrders } from '../../hooks/useOrders';
 import { createPayPalOrderAction, capturePaymentAction } from '../../../core/actions/payments/payments.actions';
 import { formatCurrency } from '../../../core/utils/format.util';
+import type { OrderResponse, OrderDetailResponse } from '../../../infrastructure/interfaces/order.response';
 
 export const CheckoutPage = () => {
     const { orderId } = useParams();
@@ -12,7 +13,7 @@ export const CheckoutPage = () => {
     const { fetchOrderById } = useOrders();
     const numericOrderId = Number(orderId);
 
-    const [order, setOrder] = useState<any>(null);
+    const [order, setOrder] = useState<OrderResponse | null>(null);
     const [loading, setLoading] = useState(true);
     const [processing, setProcessing] = useState(false);
 
@@ -56,7 +57,7 @@ export const CheckoutPage = () => {
                 {/* Resumen */}
                 <div className="border border-gray-200 rounded-lg p-4 mb-6">
                     <div className="space-y-2">
-                        {order.orderDetails?.map((d: any) => (
+                        {order.orderDetails?.map((d: OrderDetailResponse) => (
                             <div key={d.id} className="flex justify-between text-sm">
                                 <span className="text-gray-700">{d.productName} x{d.quantity}</span>
                                 <span className="text-gray-900">{formatCurrency(d.unitPrice * d.quantity)}</span>

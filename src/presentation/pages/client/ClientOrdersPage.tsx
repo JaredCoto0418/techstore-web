@@ -6,6 +6,8 @@ import type { OrderResponse } from '../../../infrastructure/interfaces/order.res
 import { Link } from 'react-router-dom';
 import { getUserIdFromToken } from '../../../core/utils/token.util';
 import { formatCurrency } from '../../../core/utils/format.util';
+import { StatusBadge } from '../../components/shared/StatusBadge';
+import type { ProductResponse } from '../../../infrastructure/interfaces/product.response';
 
 export const ClientOrdersPage = () => {
     const { orders, loading, error, fetchMyOrders, createOrder } = useOrders();
@@ -21,7 +23,7 @@ export const ClientOrdersPage = () => {
     }, []);
 
     // Obtener el producto seleccionado
-    const selectedProduct = products.find((p: any) => p.id === selectedItemId);
+    const selectedProduct = products.find((p: ProductResponse) => p.id === selectedItemId);
     const unitPrice = selectedProduct?.price || 0;
     const total = unitPrice * orderQuantity;
 
@@ -62,15 +64,6 @@ export const ClientOrdersPage = () => {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status.toUpperCase()) {
-            case 'PENDIENTE': return 'bg-yellow-100 text-yellow-800';
-            case 'EN PROCESO': return 'bg-blue-100 text-blue-800';
-            case 'COMPLETADA': return 'bg-green-100 text-green-800';
-            case 'CANCELADA': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     return (
         <div className="bg-gray-50">
@@ -131,7 +124,7 @@ export const ClientOrdersPage = () => {
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                {products.map((item: any) => (
+                                {products.map((item: ProductResponse) => (
                                     <option
                                         key={item.id}
                                         value={item.id}
@@ -240,9 +233,7 @@ export const ClientOrdersPage = () => {
                                             {formatCurrency(order.totalAmount)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                                                {order.status}
-                                            </span>
+                                            <StatusBadge status={order.status} />
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900">
                                             <div className="max-w-xs">
@@ -304,9 +295,7 @@ export const ClientOrdersPage = () => {
 
                                         <div>
                                             <span className="font-medium text-gray-700">Estado:</span>
-                                            <p><span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
-                                                {selectedOrder.status}
-                                            </span></p>
+                                            <p><StatusBadge status={selectedOrder.status} /></p>
                                         </div>
                                         <div className="col-span-2">
                                             <span className="font-medium text-gray-700">Total:</span>
