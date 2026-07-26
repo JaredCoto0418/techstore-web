@@ -69,6 +69,9 @@ export const Navbar = () => {
                                         <Link to="/client/orders" className="hover:text-indigo-200 transition-colors">
                                             Mis Órdenes
                                         </Link>
+                                        <Link to="/client/transactions" className="hover:text-indigo-200 transition-colors">
+                                            Historial de Pagos
+                                        </Link>
                                         <Link to="/catalog" className="hover:text-indigo-200 transition-colors">
                                             Catálogo
                                         </Link>
