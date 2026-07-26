@@ -3,6 +3,7 @@ import { useOrders } from '../../hooks/useOrders';
 import { useAuthStore } from '../../stores/authStore';
 import { Role } from '../../../infrastructure/enums/role.enum';
 import type { OrderStatusUpdateModel } from '../../../core/models/order.model';
+import { formatCurrency } from '../../../core/utils/format.util';
 
 export const VendorOrdersPage = () => {
     const { orders, loading, fetchMyOrders, updateOrderStatus } = useOrders();
@@ -184,7 +185,7 @@ export const VendorOrdersPage = () => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    ${order.totalAmount?.toFixed(2)}
+                                    {formatCurrency(order.totalAmount)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>

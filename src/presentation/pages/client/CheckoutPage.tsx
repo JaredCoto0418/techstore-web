@@ -4,6 +4,7 @@ import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import toast from 'react-hot-toast';
 import { useOrders } from '../../hooks/useOrders';
 import { createPayPalOrderAction, capturePaymentAction } from '../../../core/actions/payments/payments.actions';
+import { formatCurrency } from '../../../core/utils/format.util';
 
 export const CheckoutPage = () => {
     const { orderId } = useParams();
@@ -58,13 +59,13 @@ export const CheckoutPage = () => {
                         {order.orderDetails?.map((d: any) => (
                             <div key={d.id} className="flex justify-between text-sm">
                                 <span className="text-gray-700">{d.productName} x{d.quantity}</span>
-                                <span className="text-gray-900">${(d.unitPrice * d.quantity).toFixed(2)}</span>
+                                <span className="text-gray-900">{formatCurrency(d.unitPrice * d.quantity)}</span>
                             </div>
                         ))}
                     </div>
                     <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between">
                         <span className="font-semibold text-gray-900">Total</span>
-                        <span className="font-bold text-indigo-600 text-lg">${order.totalAmount.toFixed(2)} USD</span>
+                        <span className="font-bold text-indigo-600 text-lg">{formatCurrency(order.totalAmount, 'USD')}</span>
                     </div>
                 </div>
 

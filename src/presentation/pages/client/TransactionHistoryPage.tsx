@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTransactions } from '../../hooks/useTransactions';
+import { formatCurrency } from '../../../core/utils/format.util';
 
 export const TransactionHistoryPage = () => {
     const { transactions, loading, error, fetchMyTransactions } = useTransactions();
@@ -102,7 +103,7 @@ export const TransactionHistoryPage = () => {
                                                 {tx.paymentMethod}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                                ${tx.amount.toFixed(2)} {tx.currency}
+                                                {formatCurrency(tx.amount, tx.currency)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tx.status)}`}>

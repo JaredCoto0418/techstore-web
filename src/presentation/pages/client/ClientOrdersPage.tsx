@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { useOrders } from '../../hooks/useOrders';
-import { useAuthStore } from '../../stores/authStore';
 import type { OrderResponse } from '../../../infrastructure/interfaces/order.response';
 import { Link } from 'react-router-dom';
+import { getUserIdFromToken } from '../../../core/utils/token.util';
+import { formatCurrency } from '../../../core/utils/format.util';
 
 export const ClientOrdersPage = () => {
     const { orders, loading, error, fetchMyOrders, createOrder } = useOrders();
@@ -13,24 +14,11 @@ export const ClientOrdersPage = () => {
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
     const [orderQuantity, setOrderQuantity] = useState(1);
     const { products, fetchProductCatalog } = useProducts();
-    const { token } = useAuthStore();
 
     useEffect(() => {
         fetchMyOrders();
         fetchProductCatalog();
     }, []);
-
-    // Obtener userId del token
-    const getUserIdFromToken = () => {
-        if (!token) return '';
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-            return userId || '';
-        } catch {
-            return '';
-        }
-    };
 
     // Obtener el producto seleccionado
     const selectedProduct = products.find((p: any) => p.id === selectedItemId);
@@ -172,7 +160,7 @@ export const ClientOrdersPage = () => {
                         <div className="bg-gray-50 rounded-lg p-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-gray-700">Total Estimado:</span>
-                                <span className="text-2xl font-bold text-gray-900">${total.toFixed(2)}</span>
+                                <span className="text-2xl font-bold text-gray-900">{formatCurrency(total)}</span>
                             </div>
                         </div>
                         
@@ -249,7 +237,7 @@ export const ClientOrdersPage = () => {
                                         </td>
 
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            ${order.totalAmount.toFixed(2)}
+                                            {formatCurrency(order.totalAmount)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
@@ -262,7 +250,7 @@ export const ClientOrdersPage = () => {
                                                     <div key={detail.id} className="mb-1">
                                                         <span className="font-medium">{detail.productName}</span>
                                                         <span className="text-gray-500 ml-2">x{detail.quantity}</span>
-                                                        <span className="text-gray-400 ml-2">@ ${detail.unitPrice.toFixed(2)}</span>
+                                                        <span className="text-gray-400 ml-2">@ {formatCurrency(detail.unitPrice)}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -322,7 +310,7 @@ export const ClientOrdersPage = () => {
                                         </div>
                                         <div className="col-span-2">
                                             <span className="font-medium text-gray-700">Total:</span>
-                                            <p className="text-2xl font-bold text-gray-900">${selectedOrder.totalAmount.toFixed(2)}</p>
+                                            <p className="text-2xl font-bold text-gray-900">{formatCurrency(selectedOrder.totalAmount)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -337,7 +325,7 @@ export const ClientOrdersPage = () => {
                                                     <p className="text-sm text-gray-600">Cantidad: {detail.quantity}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="font-medium text-gray-900">${detail.unitPrice.toFixed(2)}</p>
+                                                    <p className="font-medium text-gray-900">{formatCurrency(detail.unitPrice)}</p>
                                                     <p className="text-sm text-gray-600">c/u</p>
                                                 </div>
                                             </div>
