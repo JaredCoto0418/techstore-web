@@ -1,50 +1,32 @@
-import axios from "axios";
+import { http, publicHttp } from "./http";
 import type { ApiResponse } from "../../infrastructure/interfaces/api.response";
 import type { ProductResponse } from "../../infrastructure/interfaces/product.response";
 import type { ProductCreateModel, ProductEditModel } from "../models/product.model";
 
-export const productsApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "https://localhost:7066/api",
-});
-
-// Instancia para peticiones públicas (sin interceptor de autorización)
-export const publicProductsApi = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "https://localhost:7066/api",
-});
-
-// Configurar interceptor para agregar token solo a peticiones autenticadas
-productsApi.interceptors.request.use((config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-});
-
 export const getProducts = async (searchTerm = "", page = 1, pageSize = 0): Promise<ApiResponse<ProductResponse[]>> => {
-    const { data } = await productsApi.get<ApiResponse<ProductResponse[]>>('/products', {
+    const { data } = await http.get<ApiResponse<ProductResponse[]>>('/products', {
         params: { searchTerm, page, pageSize }
     });
     return data;
 };
 
 export const getProductCatalog = async (): Promise<ApiResponse<ProductResponse[]>> => {
-    const { data } = await publicProductsApi.get<ApiResponse<ProductResponse[]>>('/products/catalog');
+    const { data } = await publicHttp.get<ApiResponse<ProductResponse[]>>('/products/catalog');
     return data;
 };
 
 export const getMyProducts = async (): Promise<ApiResponse<ProductResponse[]>> => {
-    const { data } = await productsApi.get<ApiResponse<ProductResponse[]>>('/products/my-products');
+    const { data } = await http.get<ApiResponse<ProductResponse[]>>('/products/my-products');
     return data;
 };
 
 export const getProductById = async (id: number): Promise<ApiResponse<ProductResponse>> => {
-    const { data } = await publicProductsApi.get<ApiResponse<ProductResponse>>(`/products/${id}`);
+    const { data } = await publicHttp.get<ApiResponse<ProductResponse>>(`/products/${id}`);
     return data;
 };
 
 export const createProduct = async (product: ProductCreateModel): Promise<ApiResponse<object>> => {
-    const { data } = await productsApi.post<ApiResponse<object>>('/products', product);
+    const { data } = await http.post<ApiResponse<object>>('/products', product);
     return data;
 };
 
@@ -64,7 +46,7 @@ export const createProductWithImage = async (product: ProductCreateModel, imageF
         formData.append('imageFile', imageFile);
     }
     
-    const { data } = await productsApi.post<ApiResponse<object>>('/products/with-image', formData, {
+    const { data } = await http.post<ApiResponse<object>>('/products/with-image', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -73,7 +55,7 @@ export const createProductWithImage = async (product: ProductCreateModel, imageF
 };
 
 export const updateProduct = async (id: number, product: ProductEditModel): Promise<ApiResponse<object>> => {
-    const { data } = await productsApi.put<ApiResponse<object>>(`/products/${id}`, product);
+    const { data } = await http.put<ApiResponse<object>>(`/products/${id}`, product);
     return data;
 };
 
@@ -98,7 +80,7 @@ export const updateProductWithImage = async (id: number, product: ProductEditMod
         formData.append('currentImageUrl', product.imageUrl);
     }
     
-    const { data } = await productsApi.put<ApiResponse<object>>(`/products/${id}/with-image`, formData, {
+    const { data } = await http.put<ApiResponse<object>>(`/products/${id}/with-image`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -107,7 +89,7 @@ export const updateProductWithImage = async (id: number, product: ProductEditMod
 };
 
 export const deleteProduct = async (id: number): Promise<ApiResponse<object>> => {
-    const response = await productsApi.delete(`/products/${id}`);
+    const response = await http.delete(`/products/${id}`);
     
     // Si el status code es 204 (No Content), no hay data en la respuesta
     if (response.status === 204) {
