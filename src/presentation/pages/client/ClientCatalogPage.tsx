@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuthStore } from '../../stores/authStore';
@@ -36,14 +37,14 @@ export const ClientCatalogPage = () => {
 
     const handleOrder = (item: any) => {
         if (!authenticated) {
-            alert('Debes iniciar sesión para realizar pedidos. Serás redirigido a la página de login.');
+            toast.error('Debes iniciar sesión para realizar pedidos. Serás redirigido al login.');
             window.location.href = '/login';
             return;
         }
 
         // Validar stock
         if (item.stock <= 0) {
-            alert('Lo sentimos, este producto está agotado.');
+            toast.error('Lo sentimos, este producto está agotado.');
             return;
         }
 
@@ -57,7 +58,7 @@ export const ClientCatalogPage = () => {
 
         const userId = getUserIdFromToken();
         if (!userId) {
-            alert('Error: No se pudo obtener el ID del usuario. Por favor, inicie sesión nuevamente.');
+            toast.error('No se pudo obtener el ID del usuario. Inicie sesión nuevamente.');
             return;
         }
 
@@ -73,7 +74,7 @@ export const ClientCatalogPage = () => {
         if (success) {
             setShowOrderModal(false);
             setSelectedItem(null);
-            alert('Orden creada exitosamente. Serás redirigido a tus órdenes.');
+            toast.success('Orden creada exitosamente. Serás redirigido a tus órdenes.');
             // Redirigir a Mis Órdenes después de crear la orden
             window.location.href = '/client/orders';
         }
