@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useProducts } from '../../hooks/useProducts';
 import { Link } from 'react-router-dom';
-import { ProductImageGallery } from '../../components/shared/ProductImageGallery';
+import { ProductCard } from '../../components/shared/ProductCard';
 
 export const PublicCatalogPage = () => {
     const { products, loading: productsLoading, fetchProductCatalog } = useProducts();
@@ -78,35 +78,16 @@ export const PublicCatalogPage = () => {
                 {/* Contenido de Productos */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                     {filteredProducts.map((product) => (
-                        <div key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                            <ProductImageGallery
-                                imageUrl={product.imageUrl}
-                                productName={product.name}
-                                variant="grid"
-                                className="w-full"
-                            />
-                            <div className="p-6">
-                                <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                                <div className="flex justify-between items-center mb-4">
-                                    <span className="text-2xl font-bold text-indigo-600">${product.price}</span>
-                                    <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
-                                        Stock: {product.stock}
-                                    </span>
-                                </div>
-                                <div className="text-sm text-gray-500 mb-4">
-                                    <p className="mb-1">📂 {product.categoryName}</p>
-                                </div>
-                                <div className="text-center">
-                                    <Link
-                                        to="/login"
-                                        className="w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium"
-                                    >
-                                        Iniciar sesión para comprar
-                                    </Link>
-                                </div>
+                        <ProductCard key={product.id} product={product}>
+                            <div className="text-center">
+                                <Link
+                                    to="/login"
+                                    className="w-full bg-indigo-600 text-white px-4 py-3 rounded-lg hover:bg-indigo-700 transition-colors duration-200 font-medium"
+                                >
+                                    Iniciar sesión para comprar
+                                </Link>
                             </div>
-                        </div>
+                        </ProductCard>
                     ))}
                 </div>
 

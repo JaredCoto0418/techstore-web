@@ -1,17 +1,19 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { useAuthStore } from '../../stores/authStore';
 import { useCartStore } from '../../stores/cartStore';
 import { Role } from '../../../infrastructure/enums/role.enum';
-import { ProductImage } from '../../components/shared/ProductImage';
+import type { ProductResponse } from '../../../infrastructure/interfaces/product.response';
+import { ProductCard } from '../../components/shared/ProductCard';
 
 
 export const ClientCatalogPage = () => {
     const { products, loading: productsLoading, fetchProductCatalog } = useProducts();
     const { authenticated, roles } = useAuthStore();
     const { addItem, totalItems } = useCartStore();
+    const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState('');
 
     const isClient = roles?.includes(Role.CLIENTE);
@@ -20,7 +22,7 @@ export const ClientCatalogPage = () => {
         fetchProductCatalog();
     }, []);
 
-    const handleAddToCart = (product: any) => {
+    const handleAddToCart = (product: ProductResponse) => {
         if (product.stock <= 0) {
             toast.error('Lo sentimos, este producto está agotado.');
             return;
@@ -80,57 +82,37 @@ export const ClientCatalogPage = () => {
             {/* Content */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {filteredProducts.map((product) => (
-                    <div key={product.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                        <ProductImage
-                            imageUrl={product.imageUrl}
-                            productName={product.name}
-                            size="md"
-                            className="w-full"
-                        />
-                        <div className="p-6">
-                            <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                            <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="text-2xl font-bold text-indigo-600">${product.price}</span>
-                                <span className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
-                                    Stock: {product.stock}
-                                </span>
-                            </div>
-                            <div className="text-sm text-gray-500 mb-4 space-y-1">
-                                <p className="flex items-center">📂 {product.categoryName}</p>
-                                <p className="flex items-center">👤 {product.sellerName}</p>
-                            </div>
-                            {!authenticated ? (
-                                <button
-                                    onClick={() => window.location.href = '/login'}
-                                    className="w-full bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
-                                >
-                                    Iniciar sesión para comprar
-                                </button>
-                            ) : !isClient ? (
-                                <button
-                                    disabled
-                                    className="w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed"
-                                >
-                                    Solo clientes pueden comprar
-                                </button>
-                            ) : product.stock <= 0 ? (
-                                <button
-                                    disabled
-                                    className="w-full bg-red-400 text-white py-2 px-4 rounded-lg cursor-not-allowed"
-                                >
-                                    Agotado
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => handleAddToCart(product)}
-                                    className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
-                                >
-                                    Agregar al carrito
-                                </button>
-                            )}
-                        </div>
-                    </div>
+                    <ProductCard key={product.id} product={product} showSeller>
+                        {!authenticated ? (
+                            <button
+                                onClick={() => navigate('/login')}
+                                className="w-full bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors"
+                            >
+                                Iniciar sesión para comprar
+                            </button>
+                        ) : !isClient ? (
+                            <button
+                                disabled
+                                className="w-full bg-gray-400 text-white py-2 px-4 rounded-lg cursor-not-allowed"
+                            >
+                                Solo clientes pueden comprar
+                            </button>
+                        ) : product.stock <= 0 ? (
+                            <button
+                                disabled
+                                className="w-full bg-red-400 text-white py-2 px-4 rounded-lg cursor-not-allowed"
+                            >
+                                Agotado
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => handleAddToCart(product)}
+                                className="w-full bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                                Agregar al carrito
+                            </button>
+                        )}
+                    </ProductCard>
                 ))}
             </div>
 
