@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { useOrders } from '../../hooks/useOrders';
-import { useAuthStore } from '../../stores/authStore';
 import type { OrderResponse } from '../../../infrastructure/interfaces/order.response';
 import { Link } from 'react-router-dom';
+import { getUserIdFromToken } from '../../../core/utils/token.util';
+import { formatCurrency } from '../../../core/utils/format.util';
+import { StatusBadge } from '../../components/shared/StatusBadge';
+import type { ProductResponse } from '../../../infrastructure/interfaces/product.response';
 
 export const ClientOrdersPage = () => {
     const { orders, loading, error, fetchMyOrders, createOrder } = useOrders();
@@ -13,27 +16,14 @@ export const ClientOrdersPage = () => {
     const [selectedItemId, setSelectedItemId] = useState<number | null>(null);
     const [orderQuantity, setOrderQuantity] = useState(1);
     const { products, fetchProductCatalog } = useProducts();
-    const { token } = useAuthStore();
 
     useEffect(() => {
         fetchMyOrders();
         fetchProductCatalog();
     }, []);
 
-    // Obtener userId del token
-    const getUserIdFromToken = () => {
-        if (!token) return '';
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            const userId = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-            return userId || '';
-        } catch {
-            return '';
-        }
-    };
-
     // Obtener el producto seleccionado
-    const selectedProduct = products.find((p: any) => p.id === selectedItemId);
+    const selectedProduct = products.find((p: ProductResponse) => p.id === selectedItemId);
     const unitPrice = selectedProduct?.price || 0;
     const total = unitPrice * orderQuantity;
 
@@ -74,15 +64,6 @@ export const ClientOrdersPage = () => {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status.toUpperCase()) {
-            case 'PENDIENTE': return 'bg-yellow-100 text-yellow-800';
-            case 'EN PROCESO': return 'bg-blue-100 text-blue-800';
-            case 'COMPLETADA': return 'bg-green-100 text-green-800';
-            case 'CANCELADA': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     return (
         <div className="bg-gray-50">
@@ -143,7 +124,7 @@ export const ClientOrdersPage = () => {
                                 required
                             >
                                 <option value="">Seleccionar...</option>
-                                {products.map((item: any) => (
+                                {products.map((item: ProductResponse) => (
                                     <option
                                         key={item.id}
                                         value={item.id}
@@ -172,7 +153,7 @@ export const ClientOrdersPage = () => {
                         <div className="bg-gray-50 rounded-lg p-4">
                             <div className="flex justify-between items-center">
                                 <span className="text-sm font-medium text-gray-700">Total Estimado:</span>
-                                <span className="text-2xl font-bold text-gray-900">${total.toFixed(2)}</span>
+                                <span className="text-2xl font-bold text-gray-900">{formatCurrency(total)}</span>
                             </div>
                         </div>
                         
@@ -249,12 +230,10 @@ export const ClientOrdersPage = () => {
                                         </td>
 
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                            ${order.totalAmount.toFixed(2)}
+                                            {formatCurrency(order.totalAmount)}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                                                {order.status}
-                                            </span>
+                                            <StatusBadge status={order.status} />
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900">
                                             <div className="max-w-xs">
@@ -262,7 +241,7 @@ export const ClientOrdersPage = () => {
                                                     <div key={detail.id} className="mb-1">
                                                         <span className="font-medium">{detail.productName}</span>
                                                         <span className="text-gray-500 ml-2">x{detail.quantity}</span>
-                                                        <span className="text-gray-400 ml-2">@ ${detail.unitPrice.toFixed(2)}</span>
+                                                        <span className="text-gray-400 ml-2">@ {formatCurrency(detail.unitPrice)}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -316,13 +295,11 @@ export const ClientOrdersPage = () => {
 
                                         <div>
                                             <span className="font-medium text-gray-700">Estado:</span>
-                                            <p><span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(selectedOrder.status)}`}>
-                                                {selectedOrder.status}
-                                            </span></p>
+                                            <p><StatusBadge status={selectedOrder.status} /></p>
                                         </div>
                                         <div className="col-span-2">
                                             <span className="font-medium text-gray-700">Total:</span>
-                                            <p className="text-2xl font-bold text-gray-900">${selectedOrder.totalAmount.toFixed(2)}</p>
+                                            <p className="text-2xl font-bold text-gray-900">{formatCurrency(selectedOrder.totalAmount)}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -337,7 +314,7 @@ export const ClientOrdersPage = () => {
                                                     <p className="text-sm text-gray-600">Cantidad: {detail.quantity}</p>
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="font-medium text-gray-900">${detail.unitPrice.toFixed(2)}</p>
+                                                    <p className="font-medium text-gray-900">{formatCurrency(detail.unitPrice)}</p>
                                                     <p className="text-sm text-gray-600">c/u</p>
                                                 </div>
                                             </div>

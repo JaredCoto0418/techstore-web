@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useTransactions } from '../../hooks/useTransactions';
+import { formatCurrency } from '../../../core/utils/format.util';
+import { StatusBadge } from '../../components/shared/StatusBadge';
 
 export const TransactionHistoryPage = () => {
     const { transactions, loading, error, fetchMyTransactions } = useTransactions();
@@ -8,15 +10,6 @@ export const TransactionHistoryPage = () => {
     useEffect(() => {
         fetchMyTransactions();
     }, []);
-
-    const getStatusColor = (status: string) => {
-        switch (status.toUpperCase()) {
-            case 'PAGADA': return 'bg-green-100 text-green-800';
-            case 'PAGO_RECHAZADO': return 'bg-red-100 text-red-800';
-            case 'PENDIENTE': return 'bg-yellow-100 text-yellow-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     const formatDate = (value: string) => {
         const d = new Date(value);
@@ -102,12 +95,10 @@ export const TransactionHistoryPage = () => {
                                                 {tx.paymentMethod}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                                ${tx.amount.toFixed(2)} {tx.currency}
+                                                {formatCurrency(tx.amount, tx.currency)}
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(tx.status)}`}>
-                                                    {tx.status}
-                                                </span>
+                                                <StatusBadge status={tx.status} />
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                                 {tx.gatewayTransactionId || '—'}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
+import { validateImageFile } from '../../../core/utils/image.util';
 
 interface ImageUploadProps {
     currentImageUrl?: string;
@@ -24,16 +25,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // Validar tipo de archivo
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/bmp'];
-        if (!allowedTypes.includes(file.type)) {
-            toast.error('Formato de archivo no válido. Use JPG, PNG, GIF o BMP.');
-            return;
-        }
-
-        // Validar tamaño (5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error('El archivo es demasiado grande. Máximo 5MB.');
+        // Validar el archivo (tipo y tamaño)
+        const error = validateImageFile(file);
+        if (error) {
+            toast.error(error);
             return;
         }
 

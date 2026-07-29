@@ -2,26 +2,16 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useCartStore } from '../../stores/cartStore';
-import { useAuthStore } from '../../stores/authStore';
 import { useOrders } from '../../hooks/useOrders';
 import { ProductImage } from '../../components/shared/ProductImage';
+import { getUserIdFromToken } from '../../../core/utils/token.util';
+import { formatCurrency } from '../../../core/utils/format.util';
 
 export const CartPage = () => {
     const { items, updateQuantity, removeItem, clearCart, totalAmount } = useCartStore();
-    const { token } = useAuthStore();
     const { createOrder } = useOrders();
     const navigate = useNavigate();
     const [processing, setProcessing] = useState(false);
-
-    const getUserIdFromToken = () => {
-        if (!token) return '';
-        try {
-            const payload = JSON.parse(atob(token.split('.')[1]));
-            return payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] || '';
-        } catch {
-            return '';
-        }
-    };
 
     const handleChekout = async () => {
         const userId = getUserIdFromToken();
@@ -75,7 +65,7 @@ export const CartPage = () => {
                                     <ProductImage imageUrl={item.imageUrl} productName={item.name} size="sm" />
                                     <div className="flex-1 min-w-0">
                                         <p className="font-medium text-gray-900 truncate">{item.name}</p>
-                                        <p className="text-sm text-gray-500">${item.price.toFixed(2)} c/u · stock {item.stock}</p>
+                                        <p className="text-sm text-gray-500">{formatCurrency(item.price)} c/u · stock {item.stock}</p>
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <button
@@ -90,7 +80,7 @@ export const CartPage = () => {
                                         >+</button>
                                     </div>
                                     <div className="w-24 text-right font-semibold text-gray-900">
-                                        ${(item.price * item.quantity).toFixed(2)}
+                                        {formatCurrency(item.price * item.quantity)}
                                     </div>
                                     <button
                                         onClick={() => removeItem(item.productId)}
@@ -104,7 +94,7 @@ export const CartPage = () => {
                         <div className="p-4 border-t border-gray-200 bg-gray-50">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="text-lg font-semibold text-gray-900">Total</span>
-                                <span className="text-2xl font-bold text-indigo-600">${totalAmount().toFixed(2)} USD</span>
+                                <span className="text-2xl font-bold text-indigo-600">{formatCurrency(totalAmount(), 'USD')}</span>
                             </div>
                             <div className="flex justify-between gap-3">
                                 <button
