@@ -3,11 +3,11 @@ import type { ApiResponse } from "../../../../infrastructure/interfaces/api.resp
 import type { LoginResponse } from "../../../../infrastructure/interfaces/login.response";
 import type { LoginModel } from "../../../models/login.model";
 import type { ApiErrorResponse } from "../../../../infrastructure/interfaces/api-error.response";
-import { authTiendaApi } from "../../../api/auth.tienda.api";
+import { publicHttp } from "../../../api/http";
 
 export const loginAction = async (login: LoginModel): Promise<ApiResponse<LoginResponse>> => {
     try {
-        const { data } = await authTiendaApi.post<ApiResponse<LoginResponse>>(
+        const { data } = await publicHttp.post<ApiResponse<LoginResponse>>(
             '/auth/login',
             login
         );

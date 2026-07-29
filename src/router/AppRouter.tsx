@@ -17,6 +17,9 @@ import { ClientDashboardPage } from '../presentation/pages/client/ClientDashboar
 import { VendorDashboardPage } from '../presentation/pages/vendor/VendorDashboardPage.tsx';
 import { Role } from '../infrastructure/enums/role.enum.ts';
 import { ClientOrdersPage } from '../presentation/pages/client/ClientOrdersPage.tsx';
+import { TransactionHistoryPage } from '../presentation/pages/client/TransactionHistoryPage.tsx';
+import { CheckoutPage } from '../presentation/pages/client/CheckoutPage.tsx';
+import { CartPage } from '../presentation/pages/client/CartPage.tsx';
 
 // Componente para rutas protegidas
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: Role[] }) => {
@@ -135,6 +138,30 @@ export const AppRouter = () => {
                     <ProtectedRoute allowedRoles={[Role.CLIENTE]}>
                         <Layout>
                             <ClientOrdersPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/client/transactions" element={
+                    <ProtectedRoute allowedRoles={[Role.CLIENTE]}>
+                        <Layout>
+                            <TransactionHistoryPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/checkout/:orderId" element={
+                    <ProtectedRoute allowedRoles={[Role.CLIENTE]}>
+                        <Layout>
+                            <CheckoutPage />
+                        </Layout>
+                    </ProtectedRoute>
+                } />
+
+                <Route path="/cart" element={
+                    <ProtectedRoute allowedRoles={[Role.CLIENTE]}>
+                        <Layout>
+                            <CartPage />
                         </Layout>
                     </ProtectedRoute>
                 } />

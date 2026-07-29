@@ -3,6 +3,9 @@ import { useOrders } from '../../hooks/useOrders';
 import { useAuthStore } from '../../stores/authStore';
 import { Role } from '../../../infrastructure/enums/role.enum';
 import type { OrderStatusUpdateModel } from '../../../core/models/order.model';
+import type { OrderResponse, OrderDetailResponse } from '../../../infrastructure/interfaces/order.response';
+import { formatCurrency } from '../../../core/utils/format.util';
+import { StatusBadge } from '../../components/shared/StatusBadge';
 
 export const VendorOrdersPage = () => {
     const { orders, loading, fetchMyOrders, updateOrderStatus } = useOrders();
@@ -10,7 +13,7 @@ export const VendorOrdersPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [showStatusModal, setShowStatusModal] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
     const [newStatus, setNewStatus] = useState('');
 
     const isVendor = roles?.includes(Role.VENDEDOR);
@@ -52,26 +55,12 @@ export const VendorOrdersPage = () => {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status.toLowerCase()) {
-            case 'pendiente':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'en_proceso':
-                return 'bg-blue-100 text-blue-800';
-            case 'completada':
-                return 'bg-green-100 text-green-800';
-            case 'cancelada':
-                return 'bg-red-100 text-red-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     // Aplicar filtros de búsqueda y estado (ya no necesitamos filtrar por vendedor porque el backend lo hace)
     const filteredOrders = orders.filter(order => {
         const matchesSearch = order.id.toString().includes(searchTerm) ||
             order.userId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            order.orderDetails?.some((detail: any) => 
+            order.orderDetails?.some((detail: OrderDetailResponse) =>
                 detail.productName?.toLowerCase().includes(searchTerm.toLowerCase())
             );
         
@@ -173,8 +162,8 @@ export const VendorOrdersPage = () => {
                                 <td className="px-6 py-4 text-sm text-gray-900">
                                     <div className="max-w-xs">
                                         {order.orderDetails
-                                            ?.filter((detail: any) => detail.productId) // Solo productos
-                                            .map((detail: any, index: number) => (
+                                            ?.filter((detail: OrderDetailResponse) => detail.productId) // Solo productos
+                                            .map((detail: OrderDetailResponse, index: number) => (
                                                 <div key={index} className="mb-1">
                                                     <span className="font-medium">{detail.productName}</span>
                                                     <span className="text-gray-500 ml-2">x{detail.quantity}</span>
@@ -184,12 +173,10 @@ export const VendorOrdersPage = () => {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                    ${order.totalAmount?.toFixed(2)}
+                                    {formatCurrency(order.totalAmount)}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                    <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                                        {order.status}
-                                    </span>
+                                    <StatusBadge status={order.status} />
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     {order.status === 'CANCELADA' || order.status === 'COMPLETADA' ? (

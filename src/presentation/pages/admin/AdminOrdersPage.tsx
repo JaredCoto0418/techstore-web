@@ -3,6 +3,9 @@ import { useOrders } from '../../hooks/useOrders';
 import { useAuthStore } from '../../stores/authStore';
 import { Role } from '../../../infrastructure/enums/role.enum';
 import type { OrderEditModel } from '../../../core/models/order.model';
+import type { OrderResponse, OrderDetailResponse } from '../../../infrastructure/interfaces/order.response';
+import { formatCurrency } from '../../../core/utils/format.util';
+import { StatusBadge } from '../../components/shared/StatusBadge';
 
 export const AdminOrdersPage = () => {
     const { orders, loading, fetchOrders, updateOrder, deleteOrder } = useOrders();
@@ -10,7 +13,7 @@ export const AdminOrdersPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('ALL');
     const [showEditModal, setShowEditModal] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [selectedOrder, setSelectedOrder] = useState<OrderResponse | null>(null);
     const [editData, setEditData] = useState<OrderEditModel>({
         userId: '',
         totalAmount: 0,
@@ -51,15 +54,6 @@ export const AdminOrdersPage = () => {
         }
     };
 
-    const getStatusColor = (status: string) => {
-        switch (status.toUpperCase()) {
-            case 'PENDIENTE': return 'bg-yellow-100 text-yellow-800';
-            case 'EN PROCESO': return 'bg-blue-100 text-blue-800';
-            case 'COMPLETADA': return 'bg-green-100 text-green-800';
-            case 'CANCELADA': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    };
 
     const filteredOrders = orders.filter(order => {
         const matchesSearch = order.id.toString().includes(searchTerm) || 
@@ -164,7 +158,7 @@ export const AdminOrdersPage = () => {
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-900">
                                         <div className="max-w-xs">
-                                            {order.orderDetails?.map((detail: any, index: number) => (
+                                            {order.orderDetails?.map((detail: OrderDetailResponse, index: number) => (
                                                 <div key={index} className="mb-1">
                                                     <span className="font-medium">{detail.productName}</span>
                                                     <span className="text-gray-500 ml-2">x{detail.quantity}</span>
@@ -173,12 +167,10 @@ export const AdminOrdersPage = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900">
-                                        ${order.totalAmount?.toFixed(2)}
+                                        {formatCurrency(order.totalAmount)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(order.status)}`}>
-                                            {order.status}
-                                        </span>
+                                        <StatusBadge status={order.status} />
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                         <div className="flex space-x-2">
@@ -189,7 +181,7 @@ export const AdminOrdersPage = () => {
                                                         userId: order.userId,
                                                         totalAmount: order.totalAmount,
                                                         status: order.status,
-                                                        orderDetails: order.orderDetails.map((detail: any) => ({
+                                                        orderDetails: order.orderDetails.map((detail: OrderDetailResponse) => ({
                                                             id: detail.id,
                                                             productId: detail.productId,
                                                             quantity: detail.quantity,
