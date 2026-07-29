@@ -1,10 +1,12 @@
 
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore.ts';
+import { useCartStore } from '../../stores/cartStore.ts';
 import { Role } from '../../../infrastructure/enums/role.enum.ts';
 
 export const Navbar = () => {
     const { authenticated, roles, logout } = useAuthStore();
+    const { totalItems } = useCartStore();
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -74,6 +76,9 @@ export const Navbar = () => {
                                         </Link>
                                         <Link to="/catalog" className="hover:text-indigo-200 transition-colors">
                                             Catálogo
+                                        </Link>
+                                        <Link to="/cart" className="hover:text-indigo-200 transition-colors">
+                                            🛒 Carrito ({totalItems()})
                                         </Link>
                                     </>
                                 )}
