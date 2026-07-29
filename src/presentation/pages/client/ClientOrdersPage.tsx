@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import toast from 'react-hot-toast';
 import { useProducts } from '../../hooks/useProducts';
 import { useOrders } from '../../hooks/useOrders';
 import { useAuthStore } from '../../stores/authStore';
@@ -43,12 +44,12 @@ export const ClientOrdersPage = () => {
 
         // Validar stock
         if (selectedProduct.stock <= 0) {
-            alert('No se puede crear la orden: El producto seleccionado no tiene stock disponible.');
+            toast.error('No se puede crear la orden: el producto seleccionado no tiene stock disponible.');
             return;
         }
 
         if (selectedProduct.stock < orderQuantity) {
-            alert(`No se puede crear la orden: Solo hay ${selectedProduct.stock} unidades disponibles, pero solicitaste ${orderQuantity}.`);
+            toast.error(`Solo hay ${selectedProduct.stock} unidades disponibles, pero solicitaste ${orderQuantity}.`);
             return;
         }
 
@@ -67,7 +68,7 @@ export const ClientOrdersPage = () => {
             setShowCreateForm(false);
             setSelectedItemId(null);
             setOrderQuantity(1);
-            alert('Orden creada exitosamente. La página se actualizará automáticamente.');
+            toast.success('Orden creada exitosamente.');
             // Refrescar lista
             await fetchMyOrders();
         }
