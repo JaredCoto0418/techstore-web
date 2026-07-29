@@ -268,12 +268,22 @@ export const ClientOrdersPage = () => {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <button
-                                                className="text-indigo-600 hover:text-indigo-900 font-medium"
-                                                onClick={() => setSelectedOrder(order)}
-                                            >
-                                                Ver Detalles
-                                            </button>
+                                            <div className="flex items-center gap-3">
+                                                {order.status?.toUpperCase() === 'PENDIENTE' && (
+                                                    <Link
+                                                        to={`/checkout/${order.id}`}
+                                                        className="text-green-600 hover:text-green-800 font-semibold"
+                                                    >
+                                                        Pagar
+                                                    </Link>
+                                                )}
+                                                <button
+                                                    className="text-indigo-600 hover:text-indigo-900 font-medium"
+                                                    onClick={() => setSelectedOrder(order)}
+                                                >
+                                                    Ver Detalles
+                                                </button>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
