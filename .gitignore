@@ -23,7 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 
-# Documentación (se subirá solo código; los README/docs se harán al final)
-README.md
+# Notas internas de trabajo (no forman parte de la entrega)
 AUTOFILL-TROUBLESHOOTING.md
 documentacion/
+
+# Variables de entorno locales
+.env
+.env.local
