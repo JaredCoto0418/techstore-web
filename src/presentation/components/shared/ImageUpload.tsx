@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { validateImageFile } from '../../../core/utils/image.util';
+import { STATIC_BASE_URL } from '../../../core/config';
 
 interface ImageUploadProps {
     currentImageUrl?: string;
@@ -86,7 +87,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 <div className="space-y-2">
                     <div className="relative inline-block">
                         <img
-                            src={`${import.meta.env.VITE_API_URL || 'https://localhost:7066'}${currentImageUrl}`}
+                            src={`${STATIC_BASE_URL}${currentImageUrl}`}
                             alt="Producto"
                             className="w-32 h-32 object-cover rounded border"
                             onError={(e) => {

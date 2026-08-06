@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ImageModal } from './ImageModal';
+import { STATIC_BASE_URL } from '../../../core/config';
 
 interface ProductImageProps {
     imageUrl?: string;
@@ -32,8 +33,6 @@ export const ProductImage: React.FC<ProductImageProps> = ({
         fill: 'object-fill'
     };
 
-    const baseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7066';
-
     const handleImageClick = () => {
         if (clickable && imageUrl) {
             setIsModalOpen(true);
@@ -60,7 +59,7 @@ export const ProductImage: React.FC<ProductImageProps> = ({
                 onClick={handleImageClick}
             >
                 <img
-                    src={`${baseUrl}${imageUrl}`}
+                    src={`${STATIC_BASE_URL}${imageUrl}`}
                     alt={productName}
                     className={`w-full h-full ${displayModeClasses[displayMode]} transition-transform duration-300 hover:scale-105`}
                     onError={(e) => {

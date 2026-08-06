@@ -10,7 +10,7 @@ export const uploadProductImage = async (productId: number, file: File): Promise
     const formData = new FormData();
     formData.append('file', file);
     
-    const { data } = await http.post<ApiResponse<FileUploadResponse>>(`/files/upload-product-image/${productId}`, formData, {
+    const { data } = await http.post<ApiResponse<FileUploadResponse>>(`/file/upload-product-image/${productId}`, formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
         },
@@ -19,6 +19,6 @@ export const uploadProductImage = async (productId: number, file: File): Promise
 };
 
 export const deleteProductImage = async (imageUrl: string): Promise<ApiResponse<object>> => {
-    const { data } = await http.delete<ApiResponse<object>>(`/files/delete-product-image?imageUrl=${encodeURIComponent(imageUrl)}`);
+    const { data } = await http.delete<ApiResponse<object>>(`/file/delete-product-image?imageUrl=${encodeURIComponent(imageUrl)}`);
     return data;
 }; 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { STATIC_BASE_URL } from '../../../core/config';
 
 interface ImageModalProps {
     isOpen: boolean;
@@ -13,8 +14,6 @@ export const ImageModal: React.FC<ImageModalProps> = ({
     imageUrl,
     alt
 }) => {
-    const baseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7066';
-
     if (!isOpen) return null;
 
     return (
@@ -33,7 +32,7 @@ export const ImageModal: React.FC<ImageModalProps> = ({
                 {/* Imagen */}
                 <div className="relative">
                     <img
-                        src={`${baseUrl}${imageUrl}`}
+                        src={`${STATIC_BASE_URL}${imageUrl}`}
                         alt={alt}
                         className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
                         onError={(e) => {
