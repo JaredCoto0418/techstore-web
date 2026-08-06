@@ -6,6 +6,7 @@ import type { CategoryResponse } from '../../../infrastructure/interfaces/catego
 import type { UserResponse } from '../../../infrastructure/interfaces/user.response';
 import { validateImageFile } from '../../../core/utils/image.util';
 import { getUserIdFromToken } from '../../../core/utils/token.util';
+import { STATIC_BASE_URL } from '../../../core/config';
 
 interface ProductFormModalProps {
     title: string;
@@ -18,8 +19,6 @@ interface ProductFormModalProps {
     onClose: () => void;
     onSubmit: (product: ProductCreateModel, imageFile?: File) => void;
 }
-
-const baseUrl = import.meta.env.VITE_API_URL || 'https://localhost:7066';
 
 export const ProductFormModal = ({
     title,
@@ -42,7 +41,7 @@ export const ProductFormModal = ({
     });
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(
-        initialProduct?.imageUrl ? `${baseUrl}${initialProduct.imageUrl}` : null
+        initialProduct?.imageUrl ? `${STATIC_BASE_URL}${initialProduct.imageUrl}` : null
     );
 
     const handleImageSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
